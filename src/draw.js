@@ -192,14 +192,13 @@ class DrawFile {
     }
 
     readPathObject(end) {
-        const path = this.readPath(end);
         return {
             boundingBox: this.readBoundingBox(),
             fillColour: this.readUint(),
             outlineColour: this.readUint(),
             outlineWidth: this.readUint(),
             pathStyle: this.readPathStyle(),
-            path
+            path: this.readPath(end)
         };
     }
 
