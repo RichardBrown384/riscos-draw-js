@@ -1,0 +1,17 @@
+{
+  "name": "riscos-draw",
+  "version": "1.0.0",
+  "description": "Library for loading RISC OS draw files",
+  "main": "src/draw.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/RichardBrown384/riscos-draw-js.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RichardBrown384/riscos-draw-js/issues"
+  },
+  "homepage": "https://github.com/RichardBrown384/riscos-draw-js#readme"
+}
