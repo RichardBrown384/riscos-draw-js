@@ -15,6 +15,7 @@ const TYPE_GROUP = 6;
 
 const TAG_END = 0;
 const TAG_MOVE = 2;
+const TAG_UNKNOWN = 4;
 const TAG_CLOSE_SUB_PATH = 5;
 const TAG_BEZIER = 6;
 const TAG_DRAW = 8;
@@ -63,8 +64,8 @@ class DrawFile {
     }
 
     checkPositionAndSize(n) {
-        this.check(this.position >= 0, 'reading off the start of a file');
-        this.check(this.position <= this.getLength() - n, 'reading off the end of the file');
+        this.check(this.getPosition() >= 0, 'reading off the start of a file');
+        this.check(this.getPosition() <= this.getLength() - n, 'reading off the end of the file');
     }
 
     readByte() {
@@ -124,10 +125,10 @@ class DrawFile {
         const tag = this.readUint();
         if (tag === TAG_END) {
             return {tag};
-        } else if (TAG_MOVE) {
+        } else if (tag === TAG_MOVE) {
             const p0 = this.readPoint();
             return {tag, points: [p0]};
-        } else if (tag === 4) {
+        } else if (tag === TAG_UNKNOWN) {
             // skip
         } else if (tag === TAG_CLOSE_SUB_PATH) {
             return {tag};
@@ -174,7 +175,7 @@ class DrawFile {
             capEnd: (style >> 2) & 0x3,
             capStart: (style >> 4) & 0x3,
             windingRule: (style >> 6) & 0x1,
-            ...(dash && {dash: this.readDash()}),
+            ...(dash && {dash}),
             triangleCapWidth: (style >> 16) & 0xFF,
             triangleCapLength: (style >> 24) & 0xFF
         };
@@ -225,7 +226,7 @@ class DrawFile {
             case TYPE_GROUP:
                 return {
                     type,
-                    size,
+                    size: 36,
                     ...this.readGroupObject()
                 };
             default:
@@ -242,6 +243,7 @@ class DrawFile {
         while (this.getPosition() < this.getLength()) {
             const position = this.getPosition();
             const object = this.readObject();
+            objects.push(object);
             const {size} = object;
             this.setPosition(position + size);
         }
