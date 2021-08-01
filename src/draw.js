@@ -11,6 +11,7 @@ const WINDING_NON_ZERO = 0;
 const WINDING_EVEN_ODD = 1;
 
 const TYPE_PATH = 2;
+const TYPE_SPRITE = 5;
 const TYPE_GROUP = 6;
 const TYPE_OPTIONS = 11;
 
@@ -194,6 +195,7 @@ class DrawFile {
     }
 
     readPathObject(end) {
+        this.checkAlignment('misaligned path object');
         return {
             boundingBox: this.readBoundingBox(),
             fillColour: this.readUint(),
@@ -204,7 +206,17 @@ class DrawFile {
         };
     }
 
+    readSpriteObject(end) {
+        this.checkAlignment('misaligned sprite object');
+        return {
+            boundingBox: this.readBoundingBox(),
+            start: this.getPosition(),
+            end
+        }
+    }
+
     readGroupObject() {
+        this.checkAlignment('misaligned group object');
         return {
             boundingBox: this.readBoundingBox(),
             name: this.readStringFully(12)
@@ -212,6 +224,7 @@ class DrawFile {
     }
 
     readOptionsObject() {
+        this.checkAlignment('misaligned options object');
         return {
             boundingBox: this.readBoundingBox(),
             paperSize: this.readUint(),
@@ -234,9 +247,12 @@ class DrawFile {
     }
 
     readObjectForType(type, end) {
+        this.checkAlignment('misaligned object body');
         switch (type) {
             case TYPE_PATH:
                 return this.readPathObject(end);
+            case TYPE_SPRITE:
+                return this.readSpriteObject(end);
             case TYPE_GROUP:
                 return {
                     size: 36,
@@ -293,6 +309,7 @@ module.exports = {
     WINDING_EVEN_ODD,
 
     TYPE_PATH,
+    TYPE_SPRITE,
     TYPE_GROUP,
     TYPE_OPTIONS,
 
