@@ -320,7 +320,7 @@ module.exports = {
     TAG_DRAW,
 
     Draw: {
-        fromBuffer: function (buffer) {
+        fromUint8Array: function (buffer) {
             return new DrawFile(buffer.buffer).load();
         }
     }
