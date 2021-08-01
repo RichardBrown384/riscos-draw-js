@@ -14,6 +14,7 @@ const TYPE_PATH = 2;
 const TYPE_SPRITE = 5;
 const TYPE_GROUP = 6;
 const TYPE_OPTIONS = 11;
+const TYPE_SPRITE_ROTATED = 13;
 
 const TAG_END = 0;
 const TAG_MOVE = 2;
@@ -121,6 +122,18 @@ class DrawFile {
         const maxX = this.readInt();
         const maxY = this.readInt();
         return {minX, minY, maxX, maxY};
+    }
+
+    readTransformationMatrix() {
+        this.checkAlignment('misaligned rotation matrix');
+        return [
+            this.readInt(),
+            this.readInt(),
+            this.readInt(),
+            this.readInt(),
+            this.readInt(),
+            this.readInt()
+        ];
     }
 
     readPathElement() {
@@ -246,6 +259,16 @@ class DrawFile {
         }
     }
 
+    readSpriteRotatedObject(end) {
+        this.checkAlignment('misaligned sprite rotated object');
+        return {
+            boundingBox: this.readBoundingBox(),
+            transform: this.readTransformationMatrix(),
+            start: this.getPosition(),
+            end
+        }
+    }
+
     readObjectForType(type, end) {
         this.checkAlignment('misaligned object body');
         switch (type) {
@@ -260,6 +283,8 @@ class DrawFile {
                 };
             case TYPE_OPTIONS:
                 return this.readOptionsObject();
+            case TYPE_SPRITE_ROTATED:
+                return this.readSpriteRotatedObject(end);
             default:
                 return {};
         }
@@ -312,6 +337,7 @@ module.exports = {
     TYPE_SPRITE,
     TYPE_GROUP,
     TYPE_OPTIONS,
+    TYPE_SPRITE_ROTATED,
 
     TAG_END,
     TAG_MOVE,
