@@ -12,6 +12,7 @@ const WINDING_EVEN_ODD = 1;
 
 const TYPE_PATH = 2;
 const TYPE_GROUP = 6;
+const TYPE_OPTIONS = 11;
 
 const TAG_END = 0;
 const TAG_MOVE = 2;
@@ -210,30 +211,54 @@ class DrawFile {
         };
     }
 
+    readOptionsObject() {
+        return {
+            boundingBox: this.readBoundingBox(),
+            paperSize: this.readUint(),
+            paperLimits: this.readUint(),
+            gridSpacing1: this.readUint(),
+            gridSpacing2: this.readUint(),
+            gridDivision: this.readUint(),
+            gridType: this.readUint(),
+            gridAutoAdjustment: this.readUint(),
+            gridShown: this.readUint(),
+            gridLocking: this.readUint(),
+            gridUnits: this.readUint(),
+            zoomMultiplier: this.readUint(),
+            zoomDivider: this.readUint(),
+            zoomLocking: this.readUint(),
+            toolboxPresent: this.readUint(),
+            entryMode: this.readUint(),
+            undoBufferSizeBytes: this.readUint()
+        }
+    }
+
+    readObjectForType(type, end) {
+        switch (type) {
+            case TYPE_PATH:
+                return this.readPathObject(end);
+            case TYPE_GROUP:
+                return {
+                    size: 36,
+                    ...this.readGroupObject()
+                };
+            case TYPE_OPTIONS:
+                return this.readOptionsObject();
+            default:
+                return {};
+        }
+    }
+
     readObject() {
         this.checkAlignment('misaligned object');
         const objectPosition = this.getPosition();
         const type = this.readInt()
         const size = this.readInt();
         const end = objectPosition + size;
-        switch (type) {
-            case TYPE_PATH:
-                return {
-                    type,
-                    size,
-                    ...this.readPathObject(end)
-                };
-            case TYPE_GROUP:
-                return {
-                    type,
-                    size: 36,
-                    ...this.readGroupObject()
-                };
-            default:
-                return {
-                    type,
-                    size
-                };
+        return {
+            type,
+            size,
+            ...this.readObjectForType(type, end)
         }
     }
 
@@ -269,6 +294,7 @@ module.exports = {
 
     TYPE_PATH,
     TYPE_GROUP,
+    TYPE_OPTIONS,
 
     TAG_END,
     TAG_MOVE,
