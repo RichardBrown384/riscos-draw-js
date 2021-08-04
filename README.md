@@ -5,7 +5,7 @@ Javascript library for reading RISC OS [Draw][draw-documentation] files.
 ## Installation
 
 ```bash
-npm install git@github.com:RichardBrown384/riscos-draw-js.git
+npm install git+https://github.com/RichardBrown384/riscos-draw-js.git
 ```
 
 ## Project status
